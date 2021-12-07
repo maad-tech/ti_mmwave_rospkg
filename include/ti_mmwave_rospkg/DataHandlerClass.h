@@ -37,6 +37,9 @@ public:
     /*User callable function to set the BaudRate*/
     void setBaudRate(int myBaudRate);
 
+    /*User callable function to set the the Radar Type*/
+    void setRadarType(bool myRadarType);
+
     /*User callable function to set maxAllowedElevationAngleDeg*/
     void setMaxAllowedElevationAngleDeg(int myMaxAllowedElevationAngleDeg);
     
@@ -79,6 +82,9 @@ private:
     
     /*Contains the baud Rate*/
     int dataBaudRate;
+
+    /*Contains the radar type*/
+    bool radarType;
     
     /*Contains the max_allowed_elevation_angle_deg (points with elevation angles 
       outside +/- max_allowed_elevation_angle_deg will be removed)*/
