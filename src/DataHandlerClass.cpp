@@ -2,8 +2,8 @@
 
 DataUARTHandler::DataUARTHandler(ros::NodeHandle* nh) : currentBufp(&pingPongBuffers[0]) , nextBufp(&pingPongBuffers[1]) {
     DataUARTHandler_pub = nh->advertise<sensor_msgs::PointCloud2>("radar_scan_pcl", 100);
-    maxAllowedElevationAngleDeg = 90; // Use max angle if none specified
-    maxAllowedAzimuthAngleDeg = 90; // Use max angle if none specified
+    maxAllowedElevationAngleDeg = 90;   // Use max angle if none specified
+    maxAllowedAzimuthAngleDeg = 90;     // Use max angle if none specified
 
     // Wait for parameters
     while(!nh->hasParam("/ti_mmwave/doppler_vel_resolution")){}
@@ -41,6 +41,13 @@ void DataUARTHandler::setBaudRate(int myBaudRate)
 {
     dataBaudRate = myBaudRate;
 }
+
+/*Implementation of setBaudRate*/
+void DataUARTHandler::setRadarType(bool myRadarType)
+{
+    radarType = myRadarType;
+}
+
 
 /*Implementation of setMaxAllowedElevationAngleDeg*/
 void DataUARTHandler::setMaxAllowedElevationAngleDeg(int myMaxAllowedElevationAngleDeg)
@@ -342,16 +349,24 @@ void *DataUARTHandler::sortIncomingData( void )
                     //get object velocity (m/s)
                     memcpy(&mmwData.objOut_cartes.velocity, &currentBufp->at(currentDatap), sizeof(mmwData.objOut_cartes.velocity));
                     currentDatap += (sizeof(mmwData.objOut_cartes.velocity));
-
+                    
+                    // TODO: option for switching between old and new radar, different coordinate mapping for both.
                     // Map mmWave sensor coordinates to ROS coordinate system
-                    RScan->points[i].x = mmwData.objOut_cartes.z; //zy ROS standard coordinate system X-axis is forward which is the mmWave sensor Y-axis
-                    RScan->points[i].y = mmwData.objOut_cartes.x; //x-x ROS standard coordinate system Y-axis is left which is the mmWave sensor -(X-axis)
-                    RScan->points[i].z = mmwData.objOut_cartes.y; //y zROS standard coordinate system Z-axis is up which is the same as mmWave sensor Z-axis
+                    if (radarType) {    // Mapping of Axis for new radar type: TI AWR1843AOP
+                        RScan->points[i].x = mmwData.objOut_cartes.x;   // zy ROS standard coordinate system X-axis is forward which is the mmWave sensor Y-axis
+                        RScan->points[i].y = mmwData.objOut_cartes.z;  // x-x ROS standard coordinate system Y-axis is left which is the mmWave sensor -(X-axis)
+                        RScan->points[i].z = mmwData.objOut_cartes.y;   // y zROS standard coordinate system Z-axis is up which is the same as mmWave sensor Z-axis
+                    } else {            // Mapping of Axis for old radar type: TI AWR1843
+                        RScan->points[i].x = mmwData.objOut_cartes.x;   // zy ROS standard coordinate system X-axis is forward which is the mmWave sensor Y-axis
+                        RScan->points[i].y = mmwData.objOut_cartes.y;  // x-x ROS standard coordinate system Y-axis is left which is the mmWave sensor -(X-axis)
+                        RScan->points[i].z = mmwData.objOut_cartes.z;   // y zROS standard coordinate system Z-axis is up which is the same as mmWave sensor Z-axis
+                    }
+
                     RScan->points[i].velocity = mmwData.objOut_cartes.velocity;
                     RScan->points[i].range = sqrt(RScan->points[i].x*RScan->points[i].x +
-                                                  RScan->points[i].y*RScan->points[i].y +
-                                                  RScan->points[i].z*RScan->points[i].z);
-
+                                                    RScan->points[i].y*RScan->points[i].y +
+                                                    RScan->points[i].z*RScan->points[i].z);
+                    
                     // Increase counter
                     i++;
                 }

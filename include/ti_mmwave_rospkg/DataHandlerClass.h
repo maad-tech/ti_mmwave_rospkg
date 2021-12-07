@@ -37,13 +37,14 @@ public:
     /*User callable function to set the BaudRate*/
     void setBaudRate(int myBaudRate);
 
+    /*User callable function to set the the Radar Type*/
+    void setRadarType(bool myRadarType);
+
     /*User callable function to set maxAllowedElevationAngleDeg*/
     void setMaxAllowedElevationAngleDeg(int myMaxAllowedElevationAngleDeg);
     
     /*User callable function to set maxAllowedElevationAngleDeg*/
     void setMaxAllowedAzimuthAngleDeg(int myMaxAllowedAzimuthAngleDeg);
-
-    void setNodeHandle(ros::NodeHandle* nh);
       
     /*User callable function to start the handler's internal threads*/
     void start(void);
@@ -79,6 +80,9 @@ private:
     
     /*Contains the baud Rate*/
     int dataBaudRate;
+
+    /*Contains the radar type*/
+    bool radarType;
     
     /*Contains the max_allowed_elevation_angle_deg (points with elevation angles 
       outside +/- max_allowed_elevation_angle_deg will be removed)*/
@@ -131,8 +135,6 @@ private:
     void *sortIncomingData(void);
     
     void visualize(const ti_mmwave_rospkg::RadarScan &msg);
-
-    ros::NodeHandle* nodeHandle;
     
     ros::Publisher DataUARTHandler_pub;
 };

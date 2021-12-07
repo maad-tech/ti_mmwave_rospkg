@@ -15,12 +15,15 @@ void mmWaveDataHdl::onInit()
     std::string mySerialPort;
     std::string myFrameID;
     int myBaudRate;
+    bool myRadarType;
     int myMaxAllowedElevationAngleDeg;
     int myMaxAllowedAzimuthAngleDeg;
    
     private_nh.getParam("data_port", mySerialPort);
    
     private_nh.getParam("data_rate", myBaudRate);
+
+    private_nh.getParam("radar_type", myRadarType);
     
     private_nh.getParam("frame_id", myFrameID);
 
@@ -38,6 +41,7 @@ void mmWaveDataHdl::onInit()
     ROS_INFO("mmWaveDataHdl: max_allowed_azimuth_angle_deg = %d", myMaxAllowedAzimuthAngleDeg);
    
     DataUARTHandler DataHandler(&private_nh);
+    DataHandler.setRadarType( myRadarType );
     DataHandler.setFrameID( (char*) myFrameID.c_str() );
     DataHandler.setUARTPort( (char*) mySerialPort.c_str() );
     DataHandler.setBaudRate( myBaudRate );
