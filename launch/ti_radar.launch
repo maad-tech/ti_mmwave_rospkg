@@ -11,25 +11,62 @@
 
   <!-- mmWave_Manager node -->
   <group ns="$(arg mav_name)">
-    <node pkg="ti_mmwave_rospkg" type="ti_mmwave_rospkg" name="ti_mmwave" output="$(arg log_output)">
-      <param name="radar_type" value="$(arg new_radar)" />
-      <param if="$(arg new_radar)" name="command_port" value="/dev/ttyRadarCommand" />
-      <param if="$(arg new_radar)" name="data_port" value="/dev/ttyRadarData" />
-      <param unless="$(arg new_radar)" name="command_port" value="/dev/ttyACM0" />
-      <param unless="$(arg new_radar)" name="data_port" value="/dev/ttyACM1" />
-      <param name="command_rate" value="115200" />
-      <param name="data_rate" value="921600" />
-      <param name="max_allowed_elevation_angle_deg" value="$(arg max_allowed_elevation_angle_deg)" />
-      <param name="max_allowed_azimuth_angle_deg" value="$(arg max_allowed_azimuth_angle_deg)" />
-      <param name="frame_id" value="ti_mmwave" />
-    </node>
-    
-    <!-- mmWaveQuickConfig node (terminates after configuring mmWave sensor) -->
-    <!-- <node pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/xwr18xx_AOP_profile_midRange.cfg" output="$(arg log_output)" /> -->
-    <node if="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843AOP/1843AOP_medium_range_0.cfg" output="screen" /> 
-    <node unless="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843/1843_medium_range_0.cfg" output="screen" /> 
-    
-    <!-- <node pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/xwr18xx_AOP_profile_allRange_inclclutter.cfg" output="$(arg log_output)" /> -->
+    <group ns="radar1">
+      <node pkg="ti_mmwave_rospkg" type="ti_mmwave_rospkg" name="ti_mmwave" output="$(arg log_output)">
+        <param name="radar_type" value="$(arg new_radar)" />
+        <param if="$(arg new_radar)" name="command_port" value="/dev/ttyRadarCommand1" />
+        <param if="$(arg new_radar)" name="data_port" value="/dev/ttyRadarData1" />
+        <param unless="$(arg new_radar)" name="command_port" value="/dev/ttyACM0" />
+        <param unless="$(arg new_radar)" name="data_port" value="/dev/ttyACM1" />
+        <param name="command_rate" value="115200" />
+        <param name="data_rate" value="921600" />
+        <param name="max_allowed_elevation_angle_deg" value="$(arg max_allowed_elevation_angle_deg)" />
+        <param name="max_allowed_azimuth_angle_deg" value="$(arg max_allowed_azimuth_angle_deg)" />
+        <param name="frame_id" value="ti_mmwave1" />
+      </node>
+
+      <!-- mmWaveQuickConfig node (terminates after configuring mmWave sensor) -->
+      <node if="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
+          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843AOP/1843AOP_medium_range_4.cfg" 
+          output="screen" /> 
+      <node unless="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
+          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843/1843_medium_range_0.cfg" 
+          output="screen" /> 
+      
+    </group>
+
+    <group ns="radar2">
+      <node pkg="ti_mmwave_rospkg" type="ti_mmwave_rospkg" name="ti_mmwave" output="$(arg log_output)" launch-prefix="bash -c 'sleep 4.0; $0 $@' ">
+        <param name="radar_type" value="$(arg new_radar)" />
+        <param if="$(arg new_radar)" name="command_port" value="/dev/ttyRadarCommand2" />
+        <param if="$(arg new_radar)" name="data_port" value="/dev/ttyRadarData2" />
+        <param unless="$(arg new_radar)" name="command_port" value="/dev/ttyACM2" />
+        <param unless="$(arg new_radar)" name="data_port" value="/dev/ttyACM3" />
+        <param name="command_rate" value="115200" />
+        <param name="data_rate" value="921600" />
+        <param name="max_allowed_elevation_angle_deg" value="$(arg max_allowed_elevation_angle_deg)" />
+        <param name="max_allowed_azimuth_angle_deg" value="$(arg max_allowed_azimuth_angle_deg)" />
+        <param name="frame_id" value="ti_mmwave2" />
+      </node>
+      
+      <!-- mmWaveQuickConfig node (terminates after configuring mmWave sensor) -->
+      <node if="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
+          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843AOP/1843AOP_medium_range_4.cfg" 
+          output="screen" launch-prefix="bash -c 'sleep 4.0; $0 $@' "/> 
+      <node unless="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
+          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843/1843_medium_range_0.cfg" 
+          output="screen" /> 
+      
+    </group>
   </group>
+
+  <node pkg="tf2_ros" 
+  type="static_transform_publisher" 
+  name="static_tf_radar1_camera" 
+  args="0.035 0 0 0 0 0 camera ti_mmwave1"/>
+  <node pkg="tf2_ros" 
+  type="static_transform_publisher" 
+  name="static_tf_radar2_camera" 
+  args="0.035 0 0 0 0 1.570796 camera ti_mmwave2"/>
   
 </launch>
