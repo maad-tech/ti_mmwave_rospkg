@@ -52,10 +52,10 @@
       
       <!-- mmWaveQuickConfig node (terminates after configuring mmWave sensor) -->
       <node if="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
-          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843AOP/1843AOP_medium_range_4.cfg" 
+          name="mmWaveQuickConfig2" args="$(find ti_mmwave_rospkg)/cfg/1843AOP/1843AOP_medium_range_lfreq_0.cfg" 
           output="screen" launch-prefix="bash -c 'sleep 4.0; $0 $@' "/> 
       <node unless="$(arg new_radar)" pkg="ti_mmwave_rospkg" type="mmWaveQuickConfig" 
-          name="mmWaveQuickConfig" args="$(find ti_mmwave_rospkg)/cfg/1843/1843_medium_range_0.cfg" 
+          name="mmWaveQuickConfig2" args="$(find ti_mmwave_rospkg)/cfg/1843/1843_medium_range_0.cfg" 
           output="screen" /> 
       
     </group>
